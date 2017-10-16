@@ -9,7 +9,7 @@ function log {
 function is_configured {
   [[ \
     -v SSHTUNNEL_PRIVATE_KEY && \
-    -v SSHTUNNEL_TUNNEL_CONFIG && \
+    -v SSHTUNNEL_LOCAL_PORT && \
     -v SSHTUNNEL_REMOTE_USER && \
     -v SSHTUNNEL_REMOTE_HOST
   ]] && return 0 || return 1
@@ -28,7 +28,7 @@ function deploy_key {
 function spawn_tunnel {
   while true; do
     log "Initialising tunnel..."
-    ssh -i ${HOME}/.ssh/ssh-tunnel-key -NT -D 8888 ${SSHTUNNEL_REMOTE_USER}@${SSHTUNNEL_REMOTE_HOST}
+    ssh -i ${HOME}/.ssh/ssh-tunnel-key -NT -D ${SSHTUNNEL_LOCAL_PORT} ${SSHTUNNEL_REMOTE_USER}@${SSHTUNNEL_REMOTE_HOST}
     log "Tunnel closed"
     sleep 5;
   done &
