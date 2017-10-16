@@ -27,20 +27,20 @@ function deploy_key {
 
 function spawn_tunnel {
   while true; do
-    log "ssh-connection-init"
-    ssh -i ${HOME}/.ssh/ssh-tunnel-key -N -o "ServerAliveInterval 10" -o "ServerAliveCountMax 3" -L ${SSHTUNNEL_TUNNEL_CONFIG} ${SSHTUNNEL_REMOTE_USER}@${SSHTUNNEL_REMOTE_HOST} -p ${SSHTUNNEL_REMOTE_PORT}
-    log "ssh-connection-end"
+    log "Initialising tunnel..."
+    ssh -i ${HOME}/.ssh/ssh-tunnel-key -NT -D 8888 ${SSHTUNNEL_REMOTE_USER}@${SSHTUNNEL_REMOTE_HOST}
+    log "Tunnel closed"
     sleep 5;
   done &
 }
 
-log "starting"
+log "Starting"
 
 if is_configured; then
   deploy_key
   spawn_tunnel
 
-  log "spawned";
+  log "Spawned";
 else
   log "missing-configuration"
 fi
