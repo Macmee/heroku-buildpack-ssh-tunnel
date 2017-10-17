@@ -20,7 +20,7 @@ function deploy_key {
   echo "${SSHTUNNEL_PRIVATE_KEY}" > ${HOME}/.ssh/ssh-tunnel-key
   chmod 600 ${HOME}/.ssh/ssh-tunnel-key
 
-  ssh-keyscan -p ${SSHTUNNEL_REMOTE_PORT} ${SSHTUNNEL_REMOTE_HOST} > ${HOME}/.ssh/known_hosts
+  ssh-keyscan ${SSHTUNNEL_REMOTE_HOST} > ${HOME}/.ssh/known_hosts
 }
 
 function spawn_tunnel {
