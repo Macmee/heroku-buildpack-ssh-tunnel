@@ -1,7 +1,5 @@
 #!/bin/bash
 
-[ -v SSHTUNNEL_REMOTE_PORT ] || SSHTUNNEL_REMOTE_PORT=22
-
 function log {
   echo "ssh-tunnel	event=$1"
 }
@@ -9,7 +7,7 @@ function log {
 function is_configured {
   [[ \
     -v SSHTUNNEL_PRIVATE_KEY && \
-    -v SSHTUNNEL_LOCAL_PORT && \
+    -v SSHTUNNEL_FORWARDING_PORT && \
     -v SSHTUNNEL_REMOTE_USER && \
     -v SSHTUNNEL_REMOTE_HOST
   ]] && return 0 || return 1
@@ -27,14 +25,12 @@ function deploy_key {
 
 function spawn_tunnel {
   while true; do
-    log "Initialising tunnel..."
-    ssh -i ${HOME}/.ssh/ssh-tunnel-key -NT -D ${SSHTUNNEL_LOCAL_PORT} ${SSHTUNNEL_REMOTE_USER}@${SSHTUNNEL_REMOTE_HOST}
+    log "Initialising tunnelling of port ${SSHTUNNEL_FORWARDING_PORT} via ${SSHTUNNEL_REMOTE_USER}@${SSHTUNNEL_REMOTE_HOST}"
+    ssh -i ${HOME}/.ssh/ssh-tunnel-key -NT -L 127.0.0.1:${SSHTUNNEL_FORWARDING_PORT}:127.0.0.1:${SSHTUNNEL_FORWARDING_PORT} ${SSHTUNNEL_REMOTE_USER}@${SSHTUNNEL_REMOTE_HOST}
     log "Tunnel closed"
     sleep 5;
   done &
 }
-
-log "Starting"
 
 if is_configured; then
   deploy_key
@@ -42,5 +38,5 @@ if is_configured; then
 
   log "Spawned";
 else
-  log "missing-configuration"
+  log "Missing configuration, please ensure SSHTUNNEL_PRIVATE_KEY, SSHTUNNEL_FORWARDING_PORT, SSHTUNNEL_REMOTE_USER & SSHTUNNEL_REMOTE_HOST environment variables are specified"
 fi
